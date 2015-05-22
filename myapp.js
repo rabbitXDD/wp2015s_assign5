@@ -15,11 +15,141 @@ var skycons = new Skycons();
   skycons.play();
   
   // want to change the icon? no problem:
-  skycons.set("today", Skycons.PARTLY_CLOUDY_NIGHT);
+  skycons.set("today", Skycons.CLEAR_NIGHT);
   
 /*
 Get value from Bootstrap dropdown menu
 */
 $('#dropdown li').on('click', function(){
-    alert($(this).text());
+    //alert($(this).text());
+    var city = $(this).text();
+    //alert('Searching for city matching ' + city + '...');
+    //alert(city)
+    $.ajax('https://query.yahooapis.com/v1/public/yql', {
+      method: 'GET',
+      data: {
+        q: 'select * from weather.forecast where woeid in (select woeid from geo.places(1) where text="' + city + '")',
+        format: 'json'
+      },
+      success: function (data) {
+
+//current weather status
+        var weatherInfo = data.query.results.channel;
+        var temperature = temp_F_to_C(weatherInfo.item.condition.temp);
+        var current_date = weatherInfo.item.condition.date.substring(0,16);
+        var weatherCondition =  weatherInfo.item.condition.text;
+        var condition_code = parseInt(weatherInfo.item.condition.code);
+        var region = weatherInfo.location.city + ', ' + weatherInfo.location.country;
+
+          
+        weatherInfo.location.city + ', ' + weatherInfo.location.country,
+          noCity = 'Sorry, I found no city matching ' + city;
+
+        $('.temperature').text(temperature);
+        $('.cloud_status').text(weatherCondition);
+        $('.date').text(current_date);
+        $('#region').text(region);
+        setWeather(condition_code,"today");
+
+//day1 weather status
+        var day1 = weatherInfo.item.forecast[1];
+        var day1_date = day1.date;
+        var day1_high_temp = temp_F_to_C(day1.high);
+        var day1_low_temp = temp_F_to_C(day1.low);
+        var day1_weatherCondition = day1.text;
+        var day1_code = parseInt(day1.code);
+
+        $('#day1_date').text(day1_date);
+        $('#day1_low').text(day1_low_temp);
+        $('#day1_high').text(day1_high_temp);
+        setWeather(day1_code,"day1");
+
+//day2 weather status
+        var day2 = weatherInfo.item.forecast[2];
+        var day2_date = day2.date;
+        var day2_high_temp = temp_F_to_C(day2.high);
+        var day2_low_temp = temp_F_to_C(day2.low);
+        var day2_weatherCondition = day2.text;
+        var day2_code = parseInt(day2.code);
+
+        $('#day2_date').text(day2_date);
+        $('#day2_low').text(day2_low_temp);
+        $('#day2_high').text(day2_high_temp);
+        setWeather(day2_code,"day2");
+
+//day3 weather status
+        var day3 = weatherInfo.item.forecast[3];
+        var day3_date = day3.date;
+        var day3_high_temp = temp_F_to_C(day3.high);
+        var day3_low_temp = temp_F_to_C(day3.low);
+        var day3_weatherCondition = day3.text;
+        var day3_code = parseInt(day3.code);
+
+
+        $('#day3_date').text(day3_date);
+        $('#day3_low').text(day3_low_temp);
+        $('#day3_high').text(day3_high_temp);
+        setWeather(day3_code,"day3");
+
+
+        if (data.query.count === 0 || data.query.results.channel.item.title === 'City not found') {
+          responsiveVoice.speak(noCity);
+          setSubtitle(noCity);
+          return false;
+        }
+        //alert(upcoming);
+      }
+    });
+    return false;
 });
+function temp_F_to_C(temp_F){
+  var temp_C = formatFloat((temp_F-32)*5/9);
+  return temp_C;
+};
+
+function formatFloat(num)
+{
+  var size = Math.pow(10, 1);
+  return Math.round(num * size) / size;
+};
+
+function setWeather(code,date){
+
+  if(code===1||code===2||code===3||code===4||code===11||code===12||code===40||code===45||code===47){
+    skycons.set(date, Skycons.RAIN);
+  }
+  if(code===6||code===7||code===9||code===18){
+    skycons.set(date, Skycons.SLEET);
+  }
+  if(code===26||code===27||code===28){
+    skycons.set(date, Skycons.CLOUDY);
+  }
+  if(code===20){
+    skycons.set(date, Skycons.FOG);
+  }
+  if(code===24){
+    skycons.set(date, Skycons.WIND);
+  }
+  if(code===30){
+    skycons.set(date, Skycons.PARTLY_CLOUDY_DAY);
+  }
+  if(code===29){
+    skycons.set(date, Skycons.PARTLY_CLOUDY_NIGHT);
+  }
+  if(code===31){
+    skycons.set(date, Skycons.CLEAR_NIGHT);
+  }
+  if(code===32){
+    skycons.set(date, Skycons.CLEAR_DAY);
+  }
+}
+
+(function () {
+
+
+  // Main Program goes here.
+  $(document).ready(function () {
+
+  });
+}());
+
