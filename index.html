@@ -1,0 +1,75 @@
+<!doctype html>
+<head>
+  <script src="https://www.parsecdn.com/js/parse-1.4.2.min.js"></script>
+  <meta charset="utf-8">
+  <title>個人頁面</title>
+  <meta name="viewport" content="width=device-width">
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+  <script type="text/javascript" src="https://www.parsecdn.com/js/parse-1.4.2.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/css.css">
+
+  <!--引入初始化 Parse 的 js 檔案-->
+  <script type="text/javascript" src="js/key.js"></script>
+  <script  type="text/javascript">
+  
+    $(document).ready(function(){
+      var currentUser = Parse.User.current();
+      
+      if(currentUser === null){
+      window.location = "logIn.html" ;
+      alert("你還沒有登入，將轉至登入畫面！") ; // 讓使用者知道轉址原因
+      
+      return null ; //避免程式繼續 
+      }else{
+        
+      var name = currentUser.getUsername();
+      var role = currentUser.get("role");
+      /* 顯示登入者名稱，避免未登入者進入此頁面*/
+      $('#name').text(name);
+      $('#role').text(role);
+
+      }
+      if (currentUser.get("present")===true) {
+        $('#signin_or_not').text(", 你已經簽到了！");
+        $('#signin').hide();
+      };
+         
+          //提示 1 : 可用轉址的方式，讓未登入的使用者轉址到 logIn.html
+      
+          //提示 2 : 請在 <span id="name" > 中顯示使用者名稱，在 <span id="role">中顯示角色  
+      
+    });
+    
+    $(document).on('click',"#signin",function(){
+      console.log("signin clicked");
+      /* 執行登出動作，並轉址到 signin 頁面*/
+        // 可參考 : https://parse.com/docs/js/guide#users-current-user
+        window.location = "logIn.html" ;
+      /* 結束 */
+    });
+
+    $(document).on('click',"#logOut",function(){
+      console.log("Logout clicked");
+      /* 執行登出動作，並轉址到 logIn 頁面*/
+        // 可參考 : https://parse.com/docs/js/guide#users-current-user
+        Parse.User.logOut();
+        window.location = "logIn.html" ;
+      /* 結束 */
+    });
+
+  </script>
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      
+      <h2></span><span id="role"></span>：<span id="name"></span><span id="signin_or_not">, 你尚未簽到</h2>
+      <div id="signin" class="btn btn-danger">簽到</div>
+      <div id="logOut" class="btn btn-danger">登出</div>
+      <a class="btn" href="attendantList.html">老師頁面</a>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!doctype html>
+<head>
+  <meta charset="utf-8">
+  <title>註冊頁面</title>
+  <meta name="viewport" content="width=device-width">
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+  <script type="text/javascript" src="http://www.parsecdn.com/js/parse-1.4.2.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/css.css">
+
+  <!--引入初始化 Parse 的 js 檔案-->
+  <script type="text/javascript" src="js/key.js"></script>
+  <script  type="text/javascript">
+    $(document).on('submit','#signUpForm',function(e){
+      console.log('signUp submit');
+      /* 請閱讀完 html 後在這裡填入送出表單後需要執行的程式碼 */
+        // 提示1 : 記得使用 preventDefault 方程 避免表單轉址
+        e.preventDefault();  // 避免 form submit 完成後 轉址
+        var user = new Parse.User();
+        user.set("username", $('#username').val());
+        user.set("email",    $('#email').val());
+        user.set("password", $('#password').val());
+        // username ,email , passwod 一定都要有
+        user.set("role", $('input[name=role]:checked').val());
+        user.set("present", false);
+        
+
+        user.signUp(null,{
+          success : function(user){     // 註冊成功後會執行的 callback
+            console.log(user);
+            alert("使用者註冊成功");
+            window.location="index.html" ;
+          },
+          error : function(course,error){ // 註冊失敗後會執行的 callback
+            console.log(error) ;
+            alert(error.message);
+          }
+        });//endof signUp
+      /* 結束*/
+    });  //endof signUpBtn onSubmit
+  </script>
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <form id="signUpForm" class="form-horizontal">
+      <fieldset>
+
+      <!-- Form Name -->
+      <legend>註冊</legend>
+
+      <!-- Text input-->
+      <div class="form-group">
+        <label class="col-md-4 control-label" for="username">username*</label>
+        <div class="col-md-4">
+        <input id="username" name="username" type="text" placeholder="username" class="form-control input-md" required="">
+      </div>
+        </div>
+      
+      <!-- Text input-->
+      <div class="form-group">
+        <label class="col-md-4 control-label" for="email">email*</label>
+        <div class="col-md-4">
+        <input id="email" name="email" type="text" placeholder="email" class="form-control input-md" required="">
+
+        </div>
+      </div>
+
+      <!-- Password input-->
+      <div class="form-group">
+        <label class="col-md-4 control-label" for="password">password*</label>
+        <div class="col-md-4">
+          <input id="password" name="password" type="password" placeholder="password" class="form-control input-md" required="">
+
+        </div>
+      </div>
+
+      <!-- Role -->
+      <div class="form-group">
+        <label class="col-md-4 control-label" for="">角色*</label>
+        <div class="col-md-4">
+          <label class="radio-inline" for="-0">
+            <input type="radio" name="role" id="-0" value="teacher" >
+            老師
+          </label>
+          <label class="radio-inline" for="-1">
+            <input type="radio" name="role" id="-1" value="student" checked="checked">
+            學生
+          </label>
+        </div>
+      </div>
+
+      <!-- Button -->
+      <div class="form-group">
+        <label class="col-md-4 control-label" for="signUpBtn"></label>
+        <div class="col-md-4">
+          <button id="signUpBtn" name="signUpBtn" class="btn btn-primary">註冊</button>
+          <a class="btn" href="logIn.html">前往登入</a>
+        </div>
+      </div>
+      </fieldset>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

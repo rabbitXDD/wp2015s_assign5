@@ -1,0 +1,110 @@
+<!doctype html>
+<head>
+  <meta charset="utf-8">
+  <title>老師頁面</title>
+  <meta name="viewport" content="width=device-width">
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+  <script type="text/javascript" src="http://www.parsecdn.com/js/parse-1.4.2.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/css.css">
+
+  <!--引入初始化 Parse 的 js 檔案-->
+  <script type="text/javascript" src="js/key.js"></script>
+  <script  type="text/javascript">
+    $(document).ready(function(){
+      console.log('document ready');
+      var currentUser = Parse.User.current();
+      if(currentUser === null){
+      window.location = "logIn.html" ;
+      alert("你還沒有登入，將轉至登入畫面！") ; // 讓使用者知道轉址原因
+      
+      return null ; //避免程式繼續 
+      }
+      var role = currentUser.get("role");
+
+      /* 要判斷使用者角色，避免不應該看到的人進到此頁面 */
+        // 提示 1 : 將非老師的角色轉址到 index 頁面
+        // 提示 2 : 將未登入的使用者轉指導 logIn 頁面
+        if(role!=="teacher"){
+            window.location = "index.html" ;
+            alert("你不是老師，將跳轉至首頁！") ; // 讓使用者知道轉址原因
+            
+            return null ; //避免程式繼續 
+        }
+      /* 請閱讀完 html 後在這裡填入送出表單後需要執行的程式碼 */
+        // 提示 1 : 挑選符合條件的使用者
+        //         可參考https://parse.com/docs/js/guide#queries-query-constraints
+        // 提示 2 : 可使用 jqeury 中的 append 方法將資料顯示在<table id="table">中
+        var user = Parse.Object.extend("User");
+        var query = new Parse.Query(user);
+        query.equalTo("present", true);
+        query.find({
+          success: function(results) {
+            //alert( results.length );
+            // Do something with the returned Parse.Object values
+            for (var i = 0; i < results.length; i++) { 
+              var object = results[i];
+              //alert(object.id + ' - ' + object.get('present'));
+              /*將結果加入table*/
+            var table = $('<table></table>').addClass('foo');
+                  var number = i+1;
+                  var row = $('<tr></tr>').addClass('bar').text(number +". "+object.get('username'));
+                  table.append(row);
+              
+            $('#table_present').append(table);
+            }
+          },
+          error: function(error) {
+            alert("Error: " + error.code + " " + error.message);
+          }
+        });
+
+        query.equalTo("present", false);
+        query.find({
+          success: function(results) {
+            //alert( results.length );
+            // Do something with the returned Parse.Object values
+            for (var i = 0; i < results.length; i++) { 
+              var object = results[i];
+              //alert(object.id + ' - ' + object.get('present'));
+              /*將結果加入table*/
+            var table = $('<table></table>').addClass('foo');
+                  var number = i+1;
+                  var row = $('<tr></tr>').addClass('bar').text(number +". "+object.get('username'));
+                  table.append(row);
+              
+            $('#table_absent').append(table);
+            }
+          },
+          error: function(error) {
+            alert("Error: " + error.code + " " + error.message);
+          }
+        });
+
+      /* 結束*/
+    }); // end of document ready
+  </script>
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <h2>老師頁面<a href="index.html" class="btn">個人頁面</a></h2>
+    </div>
+  </div>
+  <div class="container">
+    <div class="row">
+      <table id="table_present" class="table table-striped">
+        <tr>
+          <td>已出席學生</td>
+        </tr>
+      </table>
+      <table id="table_absent" class="table table-striped">
+        <tr>
+          <td>未出席學生</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</body>
+</html>
